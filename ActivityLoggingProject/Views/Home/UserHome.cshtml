@@ -1,0 +1,291 @@
+﻿
+@{
+    ViewBag.Title = "UserHome";
+}
+<html>
+<head>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+    <link rel="stylesheet" href="~/Content/styles.css">
+    <style>
+    </style>
+</head>
+<body>
+    <h1 style="color: #1AAB8A; font-family: Verdana, Arial, Helvetica, sans-serif">Your Activities</h1>
+
+    <button id="myBtn">Create Activity</button>
+
+    <div id="myModal" class="modal">
+
+        <!-- Modal for adding and editing activities -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 style="color: #1AAB8A; font-family: Verdana, Arial, Helvetica, sans-serif">Activity Details</h3>
+            <input type="hidden" id="ID" value="" />
+
+
+            <div>
+                <p>
+                    <span class="input">
+                        <span>Activity</span><input type="text" id="activityName" class="txt-input" placeholder="Add Activity">
+                        <span></span>
+                    </span>
+                    <br />
+                    <span class="input">
+                        <span>Labels</span><input type="text" id="lbl" class="txt-input" placeholder="Add Labels">
+                        <span></span>
+                    </span>
+                </p>
+
+            </div>
+            <br />
+
+            <div>
+                <strong><p style="color: #1AAB8A; font-family: Verdana, Arial, Helvetica, sans-serif">Priority</p></strong>
+                <label style="color: #EC4F2E" class="container">
+                    High
+                    <input type="radio" checked="checked" name="radio2" value="High" id="priority1">
+                    <span class="checkmark"></span>
+                </label>
+                <br />
+                <label style="color: #CA8300" class="container">
+                    Medium
+                    <input type="radio" name="radio2" value="Medium" id="priority2">
+                    <span class="checkmark"></span>
+                </label>
+                <br />
+                <label style="color: #50C957" class="container">
+                    Low
+                    <input type="radio" name="radio2" value="Low" id="priority3">
+                    <span class="checkmark"></span>
+                </label>
+                <br />
+            </div>
+
+            <button type="button" id="addActivity" class="btn-primary">Add</button>
+            <button type="button" style="display:none" id="editActivity">Edit</button>
+        </div>
+
+    </div>
+
+    <!-- Table for displaying activities -->
+    <table id="MyTable" class="styled-table">
+        <tr class="active-row">
+            <td>Activity Name</td>&nbsp;
+            <td>Priority</td>
+            <td>Labels</td>
+            <td>Edit/Delete</td>
+        </tr>
+    </table>
+    <form action='@Url.Content("~/Home/Login")'>
+        <button type="submit" id="myBtn">Sign out</button>
+    </form>
+</body>
+<script>
+    let allActivities = [];
+    let editAct = null;
+    let currentUser = '@TempData["username"]';
+     //Function to get all activities from Server
+    function getActivities(event) {
+        var d = { UserName: currentUser };
+        var settings = {
+            type: "GET",
+            dataType: "json",
+            url: '@Url.Content("~/Home/getActivities")',
+            data: d,
+            success: onSuccess,
+        };
+        $.ajax(settings);
+    }
+
+    document.addEventListener("DOMContentLoaded", getActivities);
+    //Function to append all rows in the table
+    function onSuccess(activities) {
+        var table = document.getElementById("MyTable");
+        $("#MyTable").empty();
+        allActivities = activities;
+        for (var i = 0; i < activities.length; i++) {
+            var b = document.createElement('button');
+            var b2 = document.createElement('button');
+
+            var x = document.createElement('tr');
+            x.classList.add('styled-table');
+            var c0 = x.insertCell(0);
+            c0.style.display = "none";
+            var c1 = x.insertCell(1);
+            var c2 = x.insertCell(2);
+            var c3 = x.insertCell(3);
+
+            x.append(b);
+            x.append(b2);
+            x.id = activities[i]["ID"];
+            c0.innerHTML = activities[i]["ID"];
+            c1.innerHTML = activities[i]["activityname"];
+            c2.innerHTML = activities[i]["priority"];
+            c3.innerHTML = activities[i]["labels"];
+            b.innerText = "Edit";
+            b.className = "btn-primary";
+            b2.innerText = "Delete";
+            b2.className = "btn-primary";
+            b2.addEventListener("click", deleteActivity);
+            b.addEventListener("click", editActivity);
+            table.appendChild(x);
+ 
+        }
+        if (editAct)
+        {
+            editAct = null;
+            var modal = document.getElementById("myModal");
+            modal.style.display = "none";
+        }
+    };
+    //Function to append and save the added record
+    function requestAddActivity(data) {
+
+        const reqParams = {
+            type: "GET",
+            dataType: "json",
+            url: '@Url.Content("~/Home/AddActivity")',
+            data,
+            success: function (data) {
+                allActivities.push(data);
+                var modal = document.getElementById("myModal");
+                var b = document.createElement('button');
+
+                var b2 = document.createElement('button');
+                modal.style.display = "none";
+                var table = document.getElementById("MyTable");
+                var x = document.createElement('tr');
+                x.classList.add('styled-table');
+                var c0 = x.insertCell(0);
+
+                c0.style.display = "none";
+                var c1 = x.insertCell(1);
+                var c2 = x.insertCell(2);
+                var l1 = x.insertCell(3);
+                x.append(b);
+                x.append(b2);
+
+                x.id = data.ID;
+                c0.innerHTML = data.ID;
+                c1.innerHTML = data.activityname;
+                c2.innerHTML = data.priority;
+                l1.innerHTML = data.labels;
+                b.innerText = "Edit";
+                b.className = "btn-primary";
+                b2.innerText = "Delete";
+                b2.className = "btn-primary";
+                b2.addEventListener("click", deleteActivity);
+                b.addEventListener("click", editActivity);
+                table.appendChild(x);
+            },
+        }
+
+        $.ajax(reqParams);
+    }
+
+    function requestEditActivity(data) {
+         const reqParams = {
+            type: "GET",
+            dataType: "json",
+            url: '@Url.Content("~/Home/EditActivityData")',
+             data,
+             success: getActivities
+        }
+        $.ajax(reqParams);
+    }
+
+    document.getElementById("addActivity").addEventListener("click", function () {
+        event.preventDefault();
+        document.getElementById("addActivity").innerText = "Add";
+        var username1 = '@TempData["username"]';
+        var activityName1 = document.getElementById("activityName").value;
+        var priority1 = document.getElementById("priority1");
+        var priority2 = document.getElementById("priority2");
+        var priority3 = document.getElementById("priority3");
+        var labels1 = document.getElementById("lbl").value;
+        var pr1;
+        if (priority1.checked == true) {
+            pr1="High"
+        }
+        else if (priority2.checked == true) {
+            pr1 = "Medium"
+        }
+        else
+            pr1 = "Low";
+
+
+
+        var d = { username: username1, activityName: activityName1, priority: pr1, labels: labels1 };
+        debugger;
+        if (editAct) requestEditActivity({ username: username1, activityName: activityName1, priority: pr1, ID: editAct.ID, labels: labels1 });
+        else requestAddActivity(d);
+
+    });
+    //Function to delete an activity from record
+    function deleteActivity() {
+
+        var row = this.parentElement;
+        var d = { ID: row.id };
+        var settings = {
+            type: "GET",
+            dataType: "json",
+            url: '@Url.Content("~/Home/deleteActivity")',
+            data: d,
+            success: function () {
+                row.remove();
+            },
+        };
+        $.ajax(settings);
+
+
+    };
+    //Function for editing an activity
+    function editActivity() {
+        debugger;
+        document.getElementById("addActivity").innerText="Edit";
+        var modal = document.getElementById("myModal");
+        const { id } = this.parentElement;
+        const activity = allActivities.find(act => act.ID === parseInt(id));
+        editAct = activity;
+        modal.style.display = "block";
+        document.getElementById("activityName").value = activity.activityname;
+        document.getElementById("lbl").value = activity.labels;
+        if (activity.priority == "High") {
+            document.getElementById("priority1").checked = true;
+        }
+        else if (activity.priority == "Medium") {
+            document.getElementById("priority2").checked = true;
+        }
+        else
+            document.getElementById("priority3").checked = true;
+
+    };
+
+    // Get the modal
+    var modal = document.getElementById("myModal");
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("myBtn");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks the button, open the modal
+    btn.onclick = function () {
+        modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+</script>
+</html>

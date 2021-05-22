@@ -1,0 +1,38 @@
+﻿@{
+    ViewBag.Title = "Login";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple login form</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="~/Content/styles2.css">
+</head>
+<body>
+    <form action='@Url.Content("~/Home/Authorize")' method="post">
+        <br />
+        <br />
+        <br />
+        <h1 style="color: #1AAB8A">Login Form</h1>
+        <div class="formcontainer">
+            <hr />
+            <div class="container">
+                <label for="uname"><strong>Username</strong></label>
+                <input type="text" placeholder="Enter Username" name="UserName" required>
+                <br />
+                <label for="psw"><strong>Password</strong></label>
+                <input type="password" placeholder="Enter Password" name="Password" required>
+            </div>
+            <button type="submit">Login</button>
+            <span style="color:red;">@ViewBag.ErrorMsg</span>
+            <div class="container" style="background-color: #eee">
+                <label style="padding-left: 15px">
+                    <input type="checkbox" checked="checked" name="remember"> Remember me
+                </label>
+            </div>
+</form>
+    <form action='@Url.Content("~/Home/Signup")' method="post">
+        <button type="submit">No account?? Signup</button>
+    </form>
+</body>
+</html>

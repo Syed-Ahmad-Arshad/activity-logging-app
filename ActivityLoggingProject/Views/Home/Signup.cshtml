@@ -1,0 +1,66 @@
+﻿@{
+    ViewBag.Title = "Signup";
+}
+
+
+@{
+    ViewBag.Title = "Signup";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple login form</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="~/Content/styles2.css">
+</head>
+<body>
+    <form action='@Url.Content("~/Home/SaveUser")' method="post">
+        <h1 style="color: #1AAB8A">Signup Form</h1>
+        <div class="formcontainer">
+            <hr />
+            <div class="container">
+                <label for="uname"><strong>Username</strong></label>
+                <input type="text" placeholder="Enter Username" name="UserName" required>
+                <br />
+
+                <label for="uname"><strong>Email</strong></label>
+                <input type="text" placeholder="Enter Email" name="Email" required>
+                <br />
+
+                <label for="psw"><strong>Password</strong></label>
+                <input type="password" id="pwd" placeholder="Enter Password" name="Password" required>
+                <br />
+
+
+                <label for="psw"><strong>Password</strong></label>
+                <input type="password" id="cpwd" placeholder="Enter Password" name="Confirm Password" required>
+                <br />
+                <span id="passworderror" style="display:none; color:red;">Passwords don't match.</span>
+            </div>
+            <button type="button" id="button">Signup</button>
+            <button type="submit" id="submit" style="display:none">Signup</button><br>
+            <div class="container" style="background-color: #eee">
+                <label style="padding-left: 15px">
+                    <input type="checkbox" checked="checked" name="remember"> Remember me
+                </label>
+                <br />
+                <span style="color:red;">@ViewBag.status</span>
+            </div>
+</form>
+</body>
+</html>
+<script>
+    document.getElementById("button").addEventListener("click", function () {
+        var password = document.getElementById("pwd").value;
+        var confirmpassword = document.getElementById("cpwd").value;
+        if (password == confirmpassword) {
+            document.getElementById("passworderror").style.display = "none";
+            document.getElementById("submit").click();
+        }
+        else {
+            document.getElementById("passworderror").style.display = "block";
+        }
+    });
+
+</script>
