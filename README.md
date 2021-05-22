@@ -3,7 +3,7 @@
 Requirements for running:
 
     1. .net framework version 4.7.2
-    2. MS SQL Server version
+    2. MS SQL Server
     3. Microsoft Visual Studio 2017 or above
     4. Microsoft SQL Server Management Studio 2014
 
