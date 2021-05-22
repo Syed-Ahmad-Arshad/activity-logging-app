@@ -101,7 +101,7 @@
     //Function to append all rows in the table
     function onSuccess(activities) {
         var table = document.getElementById("MyTable");
-        $("#MyTable").empty();
+        $("#MyTable tr:gt(0)").remove();
         allActivities = activities;
         for (var i = 0; i < activities.length; i++) {
             var b = document.createElement('button');
